@@ -6,7 +6,8 @@
 			version: '0.1',
 			codename: 'joyfull-dread'
 		},
-		isIE = /*@cc_on!@*/false; // TODO: Test if this works properly in all IE versions
+		isIE = /*@cc_on!@*/false, // TODO: Test if this works properly in all IE versions
+		cookie;
 
 
 	/**
@@ -349,9 +350,23 @@
 			newWindow = window.open(link, title, windowParams);
 	}
 
-	// cookie.get('cookieName');
-	// cookie.create({ name: 'CookieName', value: 'Value', expires: 365, path: '/' })
-	var cookie = {
+	/**
+	 * Manages cookies
+	 *
+	 * @description
+	 * Object literal containing three actions which apply to cookies - create, get and delete
+	 */
+	cookie = {
+
+		/**
+		 * Creates new cookie
+		 * @param name string
+		 * @param value string 
+		 * @param days number
+		 * @param path string
+		 *
+		 * Example: cookie.create({ name: 'CookieName', value: 'Value', expires: 365, path: '/' })
+		 */
 		create: function (name, value, days, path) {
 			var newCookie = '{name}={value}; expires={expires}; path={{path="/"}}',
 				date,
@@ -371,6 +386,12 @@
 			document.cookie = bind(newCookie, option);
 		},
 
+		/**
+		 * Gets new cookie
+		 * @param name string
+		 *
+		 * Example: cookie.get('cookieName');
+		 */
 		get: function (name) {
 			var nameEQ = name + "=",
 				ca = document.cookie.split(';'),
@@ -393,6 +414,13 @@
 
 			return null;
 		},
+
+		/**
+		 * Deletes existing cookie
+		 * @param name string
+		 *
+		 * Example: cookie.delete('cookieName');
+		 */
 		delete: function (name) {
 			cookie.create(name, '', -1);
 		}
