@@ -33,13 +33,13 @@
 	 * @param callback function that returns each item
 	 */
 	function loop(obj, callback) {
-	    var key;
+		var key;
 
-	    for (key in obj) {
-	        if (obj.hasOwnProperty(key)) {
-	            callback(obj[key], key);
-	        }
-	    }
+		for (key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				callback(obj[key], key);
+			}
+		}
 	}
 
 	/**
@@ -48,18 +48,19 @@
 	 * @param dummyPath string path which will be searched for the param value
 	 */
 	function getUrlParameter(param, dummyPath) {
-	    var sPageURL = dummyPath || window.location.search.substring(1),
-	        sURLVariables = sPageURL.split(/[&||?]/),
-	        res;
+		var sPageURL = dummyPath || window.location.search.substring(1),
+			sURLVariables = sPageURL.split(/[&||?]/),
+			res;
 
-	    forEach(sURLVariables, function (paramName) {
-	        var sParameterName = (paramName || '').split('=');
-	        if (sParameterName[0] === param) {
-	            res = sParameterName[1];
-	        }
-	    });
+		forEach(sURLVariables, function (paramName) {
+			var sParameterName = (paramName || '').split('=');
+			
+			if (sParameterName[0] === param) {
+				res = sParameterName[1];
+			}
+		});
 
-	    return res;
+		return res;
 	}
 
 	/**
@@ -67,24 +68,24 @@
 	 * @param el element which is checked if its in the viewport
 	 */
 	function elementInViewport(el) {
-	    var el = el[0] || el,
-	    	top = el.offsetTop,
-	  		left = el.offsetLeft,
-	  		width = el.offsetWidth,
-	  		height = el.offsetHeight;
+		var el = el[0] || el,
+			top = el.offsetTop,
+			left = el.offsetLeft,
+			width = el.offsetWidth,
+			height = el.offsetHeight;
 
 		while (el.offsetParent) {
-		    el = el.offsetParent;
-		    top += el.offsetTop;
-		    left += el.offsetLeft;
+			el = el.offsetParent;
+			top += el.offsetTop;
+			left += el.offsetLeft;
 		}
 
-	  	return (
-		    top < (window.pageYOffset + window.innerHeight) &&
-		    left < (window.pageXOffset + window.innerWidth) &&
-		    (top + height) > window.pageYOffset &&
-		    (left + width) > window.pageXOffset
-	  	);
+		return (
+			top < (window.pageYOffset + window.innerHeight) &&
+			left < (window.pageXOffset + window.innerWidth) &&
+			(top + height) > window.pageYOffset &&
+			(left + width) > window.pageXOffset
+		);
 	}
 
 	/**
@@ -92,23 +93,23 @@
 	 * @param evt object event object which is returned from click, mouseover etc.
 	 */
 	function getEventPosition(evt) {
-	    if (evt.offsetX !== undefined) {
-	        return { x: evt.offsetX, y: evt.offsetY };
-	    }
+		if (evt.offsetX !== undefined) {
+			return { x: evt.offsetX, y: evt.offsetY };
+		}
 
-	    var el = evt.target,
-	        offset = { x: 0, y: 0 };
+		var el = evt.target,
+			offset = { x: 0, y: 0 };
 
-	    while (el.offsetParent) {
-	        offset.x += el.offsetLeft;
-	        offset.y += el.offsetTop;
-	        el = el.offsetParent;
-	    }
+		while (el.offsetParent) {
+			offset.x += el.offsetLeft;
+			offset.y += el.offsetTop;
+			el = el.offsetParent;
+		}
 
-	    offset.x = evt.pageX - offset.x;
-	    offset.y = evt.pageY - offset.y;
+		offset.x = evt.pageX - offset.x;
+		offset.y = evt.pageY - offset.y;
 
-	    return offset;
+		return offset;
 	}
 
 	/**
@@ -136,19 +137,17 @@
 	 * @param callback function ex.: function (key){ console.log('KEY:', key, 'VALUE:', this[key]); })
 	 */
 	function reverseObj(obj, callback) {
-	    var arr = [],
-	        key,
-	        i;
+		var arr = [],
+			key,
+			i;
 
-	    for (key in obj) {
-	        if (obj.hasOwnProperty(key)) {
-	            arr.push(key);
-	        }
-	    }
+		loop(obj, function (value, key) {
+			arr.push(key);
+		});
 
-	    for (i = arr.length - 1; i >= 0; i -= 1) {
-	        callback.call(obj, arr[i]);
-	    }
+		for (i = arr.length - 1; i >= 0; i -= 1) {
+			callback.call(obj, arr[i]);
+		}
 	}
 
 	/**
@@ -158,14 +157,14 @@
 	function objectSize(obj) {
 		if (typeof obj !== 'object') { return; }
 
-	    var size = 0,
-	    	key;
+		var size = 0,
+			key;
 
-	    loop(obj, function () {
-	    	size += 1;
-	    });
+		loop(obj, function () {
+			size += 1;
+		});
 
-	    return size;
+		return size;
 	}
 
 	/**
@@ -185,7 +184,7 @@
 
 		});
 
-	    return dest;
+		return dest;
 	}
 
 	/**
@@ -193,13 +192,13 @@
 	 * @param callback function which returns the positon coordinates
 	 */
 	function getLocation(callback) {
-	    if (navigator.geolocation) {
-	        navigator.geolocation.getCurrentPosition(function (position) {
-	        	callback(position);
-	        });
-	    } else {
-	        alert("Geolocation is not supported by this browser.");
-	    }
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function (position) {
+				callback(position);
+			});
+		} else {
+			alert("Geolocation is not supported by this browser.");
+		}
 	}
 
 
@@ -213,9 +212,9 @@
 			'getEventPosition': getEventPosition,
 			'getElementPosition': getElementPosition,
 			'reverseObj': reverseObj,
-		    'objectSize': objectSize,
-		    'extend': extend,
-		    'getLocation': getLocation
+			'objectSize': objectSize,
+			'extend': extend,
+			'getLocation': getLocation
 		});
 	}
 
