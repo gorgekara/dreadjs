@@ -1,14 +1,13 @@
 (function (window, document, undefined) {
 	'use strict';
 
-	/**
-	 *	Create the initial dread module
-	 */
 	var d = window.d || (window.d = {}),
 		info = {
 			version: '0.1',
 			codename: 'joyfull-dread'
-		};
+		},
+		isIE = /*@cc_on!@*/false; // TODO: Test if this works properly in all IE versions
+
 
 	/**
 	 * Checks and iterates through array and returns callback with each item
@@ -168,6 +167,43 @@
 	}
 
 	/**
+	 * Checks if element object has the class
+	 * @param obj object
+	 * @param c string
+	 */
+	function hasClass(obj, c) {
+		var obj = obj[0] || obj;
+
+		return new RegExp('(\\s|^)' + c + '(\\s|$)').test(obj.className);
+	}
+
+	/**
+	 * Adds class to element
+	 * @param obj object
+	 * @param c string
+	 */
+	function addClass(obj, c) {
+		var obj = obj[0] || obj;
+
+		if (!hasClass(obj, c)) {
+			obj.className += ' ' + c;
+		}
+	}
+
+	/**
+	 * Removes class from element
+	 * @param obj object
+	 * @param c string
+	 */
+	function removeClass(obj, c) {
+		var obj = obj[0] || obj;
+
+		if (hasClass(obj, c)) {
+			obj.className = obj.className.replace(new RegExp('(\\s|^)' + c + '(\\s|$)'), ' ').replace(/\s+/g, ' ').replace(/^\s|\s$/, '');
+		}
+	}
+
+	/**
 	 * Extends object (dest) and appends properties from source
 	 * @param dest object
 	 * @param source object
@@ -251,9 +287,53 @@
 		}
 	}
 
+	/**
+	 * Binds data to string
+	 * @param str string in which data which will be replaced is marked placed within '{}' brackets
+	 * @param data object which keys are directly mapped in the string 
+	 *
+	 * @description
+	 * data: { key: value }
+	 * str:  'Example string with {key}' -> Example string with value
+	 */
+	function bindData(str, data) {
+		if (!str || str === '' || typeof data !== 'object') { return; }
+
+		loop(data, function (item, key) {
+			str = str.replace('{' + key + '}', item);
+		});
+
+		return str;
+	}
+
+	/**
+	 * Opens up new popup window
+	 * @param link string
+	 * @param title string 
+	 * @param width number
+	 * @param height number
+	 *
+	 * @description
+	 * data: { key: value }
+	 * str:  'Example string with {key}' -> Example string with value
+	 */
+	function pop(link, title, width, height) {
+		var w = width || 600,
+			h = height || 400,
+			data = { 
+				1: w, 
+				2: h, 
+				3: ((screen.height-h) / 2), 
+				4: ((screen.width-w) / 2)
+			},
+			windowParams = bindData('resizable,toolbar=0,location=0,scrollbars=1,menubar=0,width={1},height={2},top={3},left={4}', data),
+			newWindow = window.open(link, title, windowParams);
+	}
+
 	function publishAPI(d) {
 		extend(d, {
 			'info': info,
+			'isIE': isIE,
 			'forEach': forEach,
 			'loop': loop,
 			'getUrlParameter': getUrlParameter,
@@ -264,7 +344,12 @@
 			'objectSize': objectSize,
 			'extend': extend,
 			'getLocation': getLocation,
-			'fn': fn
+			'fn': fn,
+			'hasClass': hasClass,
+			'addClass': addClass,
+			'removeClass': removeClass,
+			'bindData': bindData,
+			'popWindow': popWindow
 		});
 	}
 
