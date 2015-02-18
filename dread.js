@@ -201,6 +201,55 @@
 		}
 	}
 
+	/**
+	 * Enables use of default parameter values
+	 * @param callback function in which the parameters are returned as an object
+	 * 
+	 * @description
+	 * d.fn('a=1', 'b="foo", 'c="bar"', function (params) { console.log(params); })
+	 */
+	function fn(callback) {
+		if (!arguments.length) { return; }
+
+		var callbackFn,
+			params = {},
+			bools = {
+				'true': true, 
+				'True': true, 
+				'false': false,
+				'False': false
+			};
+
+		function handleArgument(argument) {
+			if (typeof argument === 'function') {
+				callbackFn = argument;
+
+			} else {
+				var argumentArr = (argument || '').split('='),
+					key = argumentArr[0],
+					value = argumentArr[1];
+
+				switch (true) {
+					case typeof bools[value] !== 'undefined': value = bools[value];
+						break;
+
+					case argument.indexOf('"') !== -1: value = value.replace(/"/g, '');
+						break;
+
+					default: value = parseInt(value);
+						break;
+				}
+
+				params[key] = value;
+			}
+		}
+
+		forEach(arguments, handleArgument);
+
+		if (typeof callbackFn !== 'undefined') {
+			callbackFn(params);
+		}
+	}
 
 	function publishAPI(d) {
 		extend(d, {
@@ -214,7 +263,8 @@
 			'reverseObj': reverseObj,
 			'objectSize': objectSize,
 			'extend': extend,
-			'getLocation': getLocation
+			'getLocation': getLocation,
+			'fn': fn
 		});
 	}
 
