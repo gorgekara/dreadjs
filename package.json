@@ -1,0 +1,23 @@
+{
+  "name": "Dread",
+  "version": "1.0.0",
+  "description": "Small JavaScript library to make life easier.  Warning: It will grow in time.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gorgekara/dreadjs.git"
+  },
+  "author": "Gjorge Karakabakov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gorgekara/dreadjs/issues"
+  },
+  "homepage": "https://github.com/gorgekara/dreadjs",
+  "dependencies": {
+    "express": "^4.11.2"
+  }
+}
