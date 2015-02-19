@@ -426,6 +426,152 @@
 		}
 	};
 
+	/**
+	 * Makes ajax call
+	 * @param options object
+	 * @param callback function
+	 *
+	 * Example:
+		d.ajax({
+			method: 'POST',
+			url: 'http://api.randomuser.me',
+			async: true,
+			data: {
+				user: 'George',
+				password: '1231231'
+			},
+			success: function (data) {
+				console.log(data);
+			},
+			error: function (data) {
+				console.log(data);
+			},
+			done: function (data) {
+				console.log(data);
+			}
+		});
+	 */
+	function ajax(options) {
+		var xmlhttp = new XMLHttpRequest(),
+			dataSent = '';
+			console.log(this);
+		if (!options || typeof options !== 'object') { return; }
+
+		xmlhttp.onreadystatechange = function () {
+
+			if (xmlhttp.readyState === 4 ) {
+
+				if (xmlhttp.status === 200 && typeof options.success === 'function') {
+					options.success(xmlhttp);
+				} else if (xmlhttp.status == 400 && typeof options.error === 'function') {
+					options.error(xmlhttp);
+				} else if (typeof options.done === 'function') {
+					options.done(xmlhttp);
+				}
+			}
+
+		};
+
+		xmlhttp.open(options.method || 'GET', options.url, options.async || true);
+		xmlhttp.setRequestHeader('Content-type', options.contentType || 'text/plain;charset=UTF-8');
+
+		if (options.data) {
+			loop(options.data, function (value, key) {
+				dataSent += dataSent ? '&' : '';
+				dataSent += bind('{key}={value}', { key: key, value: value });
+			});
+
+			xmlhttp.send(dataSent);
+		} else {
+			xmlhttp.send();
+		}
+		
+	}
+
+	/**
+	 * Creates models and attaches URL to them
+	 * @param url string
+	 *
+	 * Example:
+		var User = new d.Model('http://api.randomuser.me/');
+	 */
+	function Model(url) {
+		this.url = url;
+	}
+
+		/**
+		 * Gets model data
+		 * @param options object
+		 * @param fnSuccess callback function - success
+		 * @param fnError callback function - error
+		 *
+		 * Example:
+
+		 	// Enables customization of data sent (url params, data and method)
+		 	options = { 
+				urlParams: '?page=1', data: {: { id: 1 }, method: 'GET' 
+			}
+			User.get(options, function (data) { console.log(data); });
+			
+			// Makes request without url params and data with default method GET
+			User.get(function (data) { console.log(data); });
+		 */
+		Model.prototype.get = function (options, fnSuccess, fnError) {
+			if (!options) { return; }
+
+			if (typeof options === 'function') {
+				var temp = fnSuccess;
+				fnSuccess = options;
+				fnError = temp;
+			}
+
+			ajax({
+				url: this.url + (options.urlParams || ''),
+				method: options.method || 'GET',
+				data: options.data || {},
+				success: fnSuccess,
+				error: fnError
+			});
+
+			return;
+		};
+
+		/**
+		 * Posts model data
+		 * @param options object
+		 * @param fnSuccess callback function - success
+		 * @param fnError callback function - error
+		 *
+		 * Example:
+
+		 	// Enables customization of data sent (url params, data and method)
+		 	options = { 
+				urlParams: '?page=1', query: { id: 1 }, method: 'GET' 
+			}
+			User.get(options, function (data) { console.log(data); });
+			
+			// Makes request without url params and data with default method GET
+			User.get(function (data) { console.log(data); });
+		 */
+		Model.prototype.post = function (options, fnSuccess, fnError) {
+			if (!options) { return; }
+
+			if (typeof options === 'function') {
+				var temp = fnSuccess;
+				fnSuccess = options;
+				fnError = temp;
+			}
+
+			ajax({
+				url: this.url + (options.urlParams || ''),
+				method: options.method || 'POST',
+				data: options.data || {},
+				success: fnSuccess,
+				error: fnError
+			});
+
+			return;
+		};
 
 	function publishAPI(d) {
 		extend(d, {
@@ -447,7 +593,9 @@
 			'removeClass': removeClass,
 			'bind': bind,
 			'pop': pop,
-			'cookie': cookie
+			'cookie': cookie,
+			'Model': Model,
+			'ajax': ajax
 		});
 	}
 
