@@ -23,8 +23,41 @@
 		var i = 0;
 
 		for (i = 0; i < array.length; i += 1) {
-			callback(array[i]);
+			callback(array[i], i);
 		}
+	}
+
+	/**
+	 * Digs through array of arrays and converts it into object
+	 * @param arr array
+	 * @param parent parent key 
+	 */
+	function arrayDigger(arr, parent) {
+		var obj = {};
+
+		d.forEach(arr, function (el, i) {
+			if (el instanceof Array) {
+				arrayDigger(el, i);
+				obj[i] = [el];
+			} else {
+				if (typeof parent !== 'undefined') {
+					if (typeof obj[parent] !== 'undefined') {
+						obj[parent].push(el);
+					} else {
+						obj[parent] = [el];
+					}
+					
+				} else {
+					if (typeof obj[i] !== 'undefined') {
+						obj[i].push(el);
+					} else {
+						obj[i] = [el];
+					}
+				}
+			}
+		});
+
+		return obj;
 	}
 
 	/**
@@ -304,6 +337,29 @@
 		loop(data, function (item, key) {
 			str = str.replace('{' + key + '}', item);
 
+			// Array
+			if (item instanceof Array) {
+
+				var re = new RegExp('{#each (.*?) from ' + key + '}([\\s\\S]*?){\/each}');
+				
+				if (re.test(str)) {
+					var newEl = '',
+						newElMatch = str.match(re);
+
+					forEach(item, function (subItem, i) {
+						var newElLabel = newElMatch[1] || '',
+							copyEl = str.match(re)[2] || '';
+
+						copyEl = copyEl.replace('{' + newElLabel + '}', subItem);
+						copyEl = copyEl.replace(/{#index}/, i);
+						newEl += copyEl;
+					});
+
+					str = str.replace(re, newEl);
+				}
+
+			}
+
 			var re = new RegExp('{{' + key + '=.*?}}');
 
 			if (re.test(str)) {
@@ -311,8 +367,8 @@
 			}
 		});
 
+		// if default value is set
 		var matched = str.match(/{{(.*?)}}/g);
-
 		if (matched !== null && matched.length) {
 			forEach(matched, function (match) {
 				var singleMatch = match.replace(/[{{||}}]/g, '').split('='),
@@ -495,8 +551,9 @@
 	 * Example:
 		var User = new d.Model('http://api.randomuser.me/');
 	 */
-	function Model(url) {
+	function Model(url, template) {
 		this.url = url;
+		this.template = template;
 	}
 
 		/**
@@ -573,11 +630,19 @@
 			return;
 		};
 
+		Model.prototype.populate = function () {
+			if (typeof this.template === 'undefined' || typeof this.template !== 'string') { return; }
+
+			var element = document.getElementById(this.template);
+
+		};
+
 	function publishAPI(d) {
 		extend(d, {
 			'info': info,
 			'isIE': isIE,
 			'forEach': forEach,
+			'arrayDigger': arrayDigger,
 			'loop': loop,
 			'getUrlParameter': getUrlParameter,
 			'elementInViewport': elementInViewport,

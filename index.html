@@ -3,9 +3,6 @@
 <head>
 	<title>Dread.js</title>
 
-	<link rel="stylesheet" type="text/css" href="bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.flatly.min.css" />
-
 	<link rel="stylesheet" type="text/css" href="css/main.css" />
 </head>
 <body>
@@ -14,16 +11,26 @@
 		<h1>Dread.js</h1>
 		<h4>JavaScript framework to make things faster</h4>
 
+
 		<p>
-			<div class="test-string">Hello! My name is {name}. I'am from {{country="Macedonia"}} and this is {{name="Pero"}}.</div>
+			{{country="Macedonia"}}
+			{name}
+			{#each value in array} {value} {/each}
+			
+			<div id="test-string">Hello! My name is {name}. I'am from {{country="Macedonia"}} and this is {{name="Pero"}}.</div>
+			<div id="test-string-2">
+				{#each test from tests}
+					<li>{test} --> {#index}</li>
+				{/each}
+			</div>
 		</p>
 	</div>
 
-	<script type="text/javascript" src="jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="dread.js"></script>
 
 	<script type="text/javascript">
-		$('.test-string').html(d.bind($('.test-string').text(), { name: 'George' }));
+		document.getElementById('test-string').innerHTML = d.bind(document.getElementById('test-string').innerHTML, { name: 'George' });
+		document.getElementById('test-string-2').innerHTML = d.bind(document.getElementById('test-string-2').innerHTML, { tests: [1, 2, 3, 4, 5, 6] });
 	</script>
 </body>
 </html>
